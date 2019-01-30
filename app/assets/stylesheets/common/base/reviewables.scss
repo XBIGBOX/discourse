@@ -33,7 +33,26 @@
   padding-bottom: 1em;
 }
 
-.reviewable-queued-post {
+.reviewable-scores {
+  margin-top: 1em;
+  min-width: 50%;
+
+  .user {
+    img {
+      margin-right: 0.5em;
+    }
+  }
+  th {
+    text-align: left;
+  }
+  th,
+  td {
+    padding: 0.25em;
+  }
+}
+
+.reviewable-queued-post,
+.reviewable-flagged-post {
   .post-title {
     background-color: yellow;
   }
@@ -47,6 +66,7 @@
   .post-topic {
     font-weight: bold;
     color: $primary-medium;
+    margin-bottom: 1em;
   }
 }
 

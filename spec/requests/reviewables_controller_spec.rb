@@ -42,8 +42,11 @@ describe ReviewablesController do
         expect(json_review['created_by_id']).to eq(reviewable.created_by_id)
         expect(json_review['status']).to eq(Reviewable.statuses[:pending])
         expect(json_review['type']).to eq('ReviewableUser')
+        expect(json_review['target_created_by_id']).to eq(reviewable.target_created_by_id)
+        expect(json_review['score']).to eq(reviewable.score)
 
         expect(json['users'].any? { |u| u['id'] == reviewable.created_by_id }).to eq(true)
+        expect(json['users'].any? { |u| u['id'] == reviewable.target_created_by_id }).to eq(true)
       end
 
       it "will use the ReviewableUser serializer for its fields" do

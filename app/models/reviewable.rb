@@ -15,6 +15,7 @@ class Reviewable < ActiveRecord::Base
   validates_presence_of :type, :status, :created_by_id
   belongs_to :target, polymorphic: true
   belongs_to :created_by, class_name: 'User'
+  belongs_to :target_created_by, class_name: 'User'
   belongs_to :reviewable_by_group, class_name: 'Group'
 
   # Optional, for filtering
@@ -22,6 +23,7 @@ class Reviewable < ActiveRecord::Base
   belongs_to :category
 
   has_many :reviewable_histories
+  has_many :reviewable_scores
 
   after_create do
     DiscourseEvent.trigger(:reviewable_created, self)
@@ -54,6 +56,15 @@ class Reviewable < ActiveRecord::Base
   rescue ActiveRecord::RecordNotUnique
     where(target: target).update_all(status: statuses[:pending])
     find_by(target: target).tap { |r| r.log_history(:transitioned, created_by) }
+  end
+
+  def add_score(user, reviewable_score_type)
+    reviewable_scores.create!(
+      user: user,
+      status: ReviewableScore.statuses[:pending],
+      reviewable_score_type: reviewable_score_type,
+      score: 1.0
+    )
   end
 
   def history
@@ -154,7 +165,12 @@ class Reviewable < ActiveRecord::Base
 
   def self.viewable_by(user)
     return none unless user.present?
-    result = order('created_at desc').includes(:target, :created_by, :topic)
+    result = order('score desc, created_at desc').includes(
+      :created_by,
+      :topic,
+      :target,
+      :target_created_by
+    ).includes(reviewable_scores: :user)
     return result if user.admin?
 
     result.where(

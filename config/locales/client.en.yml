@@ -366,7 +366,13 @@ en:
       save: "Save"
       cancel: "Cancel"
       new_topic: "New Topic:"
+      scores:
+        description: "Description"
+        score: "Score"
       types:
+        reviewable_flagged_post:
+          title: 'Flagged Post'
+          flagged_by: "Flagged By"
         reviewable_queued_post:
           title: 'New Post'
         reviewable_user:

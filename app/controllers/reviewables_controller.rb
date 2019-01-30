@@ -2,7 +2,7 @@ class ReviewablesController < ApplicationController
   requires_login
 
   def index
-    reviewables = Reviewable.list_for(current_user, status: :pending)
+    reviewables = Reviewable.list_for(current_user, status: :pending).to_a
 
     # This is a bit awkward, but ActiveModel serializers doesn't seem to serialize STI
     hash = {}
@@ -14,7 +14,8 @@ class ReviewablesController < ApplicationController
       end,
       meta: {
         types: {
-          created_by: 'user'
+          created_by: 'user',
+          target_created_by: 'user'
         }
       }
     }

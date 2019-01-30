@@ -4,6 +4,7 @@ Fabricator(:reviewable) do
   created_by { Fabricate(:user) }
   target_id { Fabricate(:user).id }
   target_type "User"
+  target_created_by { Fabricate(:user) }
   category
   payload {
     { list: [1, 2, 3], name: 'bandersnatch' }
@@ -44,4 +45,13 @@ Fabricator(:reviewable_queued_post) do
       image_sizes: { "http://foo.bar/image.png" => { "width" => 0, "height" => 222 } }
     }
   }
+end
+
+Fabricator(:reviewable_flagged_post) do
+  reviewable_by_moderator true
+  type 'ReviewableFlaggedPost'
+  created_by { Fabricate(:user) }
+  topic
+  target_type 'Post'
+  target { Fabricate(:post) }
 end

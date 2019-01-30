@@ -465,9 +465,8 @@ class TopicsController < ApplicationController
     topic = Topic.find(params[:topic_id].to_i)
     first_post = topic.ordered_posts.first
 
-    guardian.ensure_can_see!(first_post)
-
-    PostAction.act(current_user, first_post, PostActionType.types[:bookmark])
+    result = PostActionCreator.create(current_user, first_post, :bookmark)
+    return render_json_error(result) if result.failed?
 
     render body: nil
   end

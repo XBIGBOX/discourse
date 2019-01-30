@@ -16,10 +16,12 @@ class CreateReviewables < ActiveRecord::Migration[5.2]
       # For filtering
       t.integer :category_id, null: true
       t.integer :topic_id, null: true
+      t.float :score, null: false, default: 0
 
       # Polymorphic relation of reviewable thing
       t.integer :target_id, null: true
       t.string :target_type, null: true
+      t.integer :target_created_by_id, null: true
 
       t.json :payload, null: true
 
@@ -28,6 +30,7 @@ class CreateReviewables < ActiveRecord::Migration[5.2]
 
     add_index :reviewables, :status
     add_index :reviewables, [:status, :type]
+    add_index :reviewables, [:status, :score]
     add_index :reviewables, [:type, :target_id], unique: true
   end
 end

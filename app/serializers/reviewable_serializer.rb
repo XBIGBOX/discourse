@@ -12,13 +12,16 @@ class ReviewableSerializer < ApplicationSerializer
     :topic_id,
     :category_id,
     :created_at,
-    :can_edit
+    :can_edit,
+    :score
   )
 
   has_one :created_by, serializer: BasicUserSerializer, root: 'users'
+  has_one :target_created_by, serializer: BasicUserSerializer, root: 'users'
   has_one :topic, serializer: BasicTopicSerializer
   has_many :reviewable_actions, serializer: ReviewableActionSerializer
   has_many :editable_fields, serializer: ReviewableEditableFieldSerializer, embed: :objects
+  has_many :reviewable_scores, serializer: ReviewableScoreSerializer
 
   # Used to keep track of our payload attributes
   class_attribute :_payload_for_serialization

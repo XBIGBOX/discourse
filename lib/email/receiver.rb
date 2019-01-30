@@ -918,11 +918,10 @@ module Email
     end
 
     def create_post_action(user, post, type)
-      PostActionCreator.new(user, post).perform(type)
+      result = PostActionCreator.new(user, post, type).perform
+      raise InvalidPostAction.new if result.failed? && result.forbidden
     rescue PostAction::AlreadyActed
       # it's cool, don't care
-    rescue Discourse::InvalidAccess => e
-      raise InvalidPostAction.new(e)
     end
 
     def is_whitelisted_attachment?(attachment)
