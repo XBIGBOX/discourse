@@ -14,9 +14,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
     Fabricate(:post, user: user)
 
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
 
     granter.execute({})
 
@@ -32,9 +32,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
     Fabricate(:post, user: user)
 
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
 
     SystemMessage.any_instance.expects(:create).never
     granter.execute({})
@@ -51,9 +51,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
     Fabricate(:post, user: user)
 
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
 
     SystemMessage.any_instance.expects(:create).never
     granter.execute({})
@@ -71,9 +71,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
     Fabricate(:post, user: user)
 
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
     old_user = Fabricate(:user, created_at: 6.months.ago)
-    PostAction.act(old_user, p, PostActionType.types[:like])
+    PostActionCreator.create(old_user, p, :like)
 
     granter.execute({})
 
@@ -88,9 +88,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       Fabricate(:post, user: user)
       p = Fabricate(:post, user: user)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
 
       expect(granter.scores.keys).not_to include(user.id)
     end
@@ -99,9 +99,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       user = Fabricate(:user, created_at: 1.week.ago)
       p = Fabricate(:post, user: user)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
 
       expect(granter.scores.keys).not_to include(user.id)
     end
@@ -112,9 +112,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       Fabricate(:post, topic: topic, user: user)
       p = Fabricate(:post, user: user)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
 
       expect(granter.scores.keys).not_to include(user.id)
     end
@@ -124,7 +124,7 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       Fabricate(:post, user: user)
       p = Fabricate(:post, user: user)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
 
       expect(granter.scores.keys).not_to include(user.id)
     end
@@ -134,9 +134,9 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       Fabricate(:post, user: user)
       p = Fabricate(:post, user: user)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
       old_user = Fabricate(:user, created_at: 6.months.ago)
-      PostAction.act(old_user, p, PostActionType.types[:like])
+      PostActionCreator.create(old_user, p, :like)
 
       expect(granter.scores.keys).to include(user.id)
     end
@@ -154,14 +154,14 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
       um = Fabricate(:user, trust_level: 3, moderator: true)
       ua = Fabricate(:user, trust_level: 0, admin: true)
 
-      PostAction.act(u0, p, PostActionType.types[:like])
-      PostAction.act(u1, p, PostActionType.types[:like])
-      PostAction.act(u2, p, PostActionType.types[:like])
-      PostAction.act(u3, p, PostActionType.types[:like])
-      PostAction.act(u4, p, PostActionType.types[:like])
-      PostAction.act(um, p, PostActionType.types[:like])
-      PostAction.act(ua, p, PostActionType.types[:like])
-      PostAction.act(Discourse.system_user, p, PostActionType.types[:like])
+      PostActionCreator.create(u0, p, :like)
+      PostActionCreator.create(u1, p, :like)
+      PostActionCreator.create(u2, p, :like)
+      PostActionCreator.create(u3, p, :like)
+      PostActionCreator.create(u4, p, :like)
+      PostActionCreator.create(um, p, :like)
+      PostActionCreator.create(ua, p, :like)
+      PostActionCreator.create(Discourse.system_user, p, :like)
       expect(granter.scores[user.id]).to eq(1.55)
 
       # It goes down the more they post
@@ -179,18 +179,18 @@ describe Jobs::GrantNewUserOfTheMonthBadges do
 
       p = Fabricate(:post, user: u1)
       Fabricate(:post, user: u1)
-      PostAction.act(ou1, p, PostActionType.types[:like])
-      PostAction.act(ou2, p, PostActionType.types[:like])
+      PostActionCreator.create(ou1, p, :like)
+      PostActionCreator.create(ou2, p, :like)
 
       p = Fabricate(:post, user: u2)
       Fabricate(:post, user: u2)
-      PostAction.act(ou1, p, PostActionType.types[:like])
-      PostAction.act(ou2, p, PostActionType.types[:like])
+      PostActionCreator.create(ou1, p, :like)
+      PostActionCreator.create(ou2, p, :like)
 
       p = Fabricate(:post, user: u3)
       Fabricate(:post, user: u3)
-      PostAction.act(ou1, p, PostActionType.types[:like])
-      PostAction.act(ou2, p, PostActionType.types[:like])
+      PostActionCreator.create(ou1, p, :like)
+      PostActionCreator.create(ou2, p, :like)
 
       expect(granter.scores.keys.size).to eq(2)
     end

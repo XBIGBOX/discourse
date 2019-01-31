@@ -41,8 +41,8 @@ class PostActionCreator
   end
 
   # Shortcut for PostActionCreator.new(...).perform, also takes a key instead of an id
-  def self.create(created_by, post, action_key)
-    new(created_by, post, PostActionType.types[action_key]).perform
+  def self.create(created_by, post, action_key, message: nil)
+    new(created_by, post, PostActionType.types[action_key], message: message).perform
   end
 
   def perform
@@ -80,6 +80,15 @@ class PostActionCreator
 
     rescue PostAction::FailedToCreatePost => e
       result.add_errors_from(e)
+    rescue PostAction::AlreadyActed
+      # If the user already performed this action, it's proably due to a different browser tab
+      # or non-debounced clicking. We can ignore.
+      result.success = true
+      result.post_action = PostAction.find_by(
+        user: @created_by,
+        post: @post,
+        post_action_type_id: @post_action_type_id
+      )
     end
 
     result
