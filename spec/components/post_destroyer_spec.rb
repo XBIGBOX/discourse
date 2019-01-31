@@ -84,7 +84,7 @@ describe PostDestroyer do
 
       # flag the post, it should not nuke the stub anymore
       topic.recover!
-      PostAction.act(Fabricate(:coding_horror), reply1, PostActionType.types[:spam])
+      PostActionCreator.create(Fabricate(:coding_horror), reply1, :spam)
 
       PostDestroyer.destroy_stubs
 
@@ -219,8 +219,8 @@ describe PostDestroyer do
 
   describe "recovery and post actions" do
     let(:codinghorror) { Fabricate(:coding_horror) }
-    let!(:like) { PostAction.act(codinghorror, post, PostActionType.types[:like]) }
-    let!(:another_like) { PostAction.act(moderator, post, PostActionType.types[:like]) }
+    let!(:like) { PostActionCreator.create(codinghorror, post, :like) }
+    let!(:another_like) { PostActionCreator.create(moderator, post, :like) }
 
     it "restores public post actions" do
       PostDestroyer.new(moderator, post).destroy
@@ -628,8 +628,8 @@ describe PostDestroyer do
 
   describe "post actions" do
     let(:second_post) { Fabricate(:post, topic_id: post.topic_id) }
-    let!(:bookmark) { PostAction.act(moderator, second_post, PostActionType.types[:bookmark]) }
-    let!(:flag) { PostAction.act(moderator, second_post, PostActionType.types[:off_topic]) }
+    let!(:bookmark) { PostActionCreator.create(moderator, second_post, :bookmark) }
+    let!(:flag) { PostActionCreator.create(moderator, second_post, :off_topic) }
 
     before do
       Jobs::SendSystemMessage.clear

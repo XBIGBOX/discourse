@@ -39,7 +39,7 @@ describe UserActionsController do
 
       post = Fabricate(:post)
       user = Fabricate(:user)
-      PostAction.act(user, post, PostActionType.types[:like])
+      PostActionCreator.create(user, post, :like)
 
       get "/user_actions.json", params: {
         username: post.user.username,

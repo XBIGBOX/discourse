@@ -6,7 +6,7 @@ describe UserSummarySerializer do
     user = Fabricate(:user)
     liked_user = Fabricate(:user, name: "John Doe", username: "john_doe")
     liked_post = create_post(user: liked_user)
-    PostAction.act(user, liked_post, PostActionType.types[:like])
+    PostActionCreator.create(user, liked_post, :like)
 
     guardian = Guardian.new(user)
     summary = UserSummary.new(user, guardian)

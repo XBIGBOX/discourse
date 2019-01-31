@@ -162,16 +162,16 @@ describe UserMerger do
       now = Time.zone.now
 
       freeze_time(now - 1.day)
-      PostAction.act(source_user, p1, PostActionType.types[:like])
-      PostAction.act(source_user, p2, PostActionType.types[:like])
-      PostAction.act(target_user, p2, PostActionType.types[:like])
-      PostAction.act(target_user, p3, PostActionType.types[:like])
+      PostActionCreator.create(source_user, p1, :like)
+      PostActionCreator.create(source_user, p2, :like)
+      PostActionCreator.create(target_user, p2, :like)
+      PostActionCreator.create(target_user, p3, :like)
 
       freeze_time(now)
-      PostAction.act(source_user, p4, PostActionType.types[:like])
-      PostAction.act(source_user, p5, PostActionType.types[:like])
-      PostAction.act(target_user, p5, PostActionType.types[:like])
-      PostAction.act(source_user, p6, PostActionType.types[:like])
+      PostActionCreator.create(source_user, p4, :like)
+      PostActionCreator.create(source_user, p5, :like)
+      PostActionCreator.create(target_user, p5, :like)
+      PostActionCreator.create(source_user, p6, :like)
       PostAction.remove_act(source_user, p6, PostActionType.types[:like])
 
       merge_users!
@@ -311,10 +311,10 @@ describe UserMerger do
       type_ids = PostActionType.public_type_ids + [PostActionType.flag_types.values.first]
 
       type_ids.each do |type|
-        PostAction.act(source_user, p1, type)
-        PostAction.act(source_user, p2, type)
-        PostAction.act(target_user, p2, type)
-        PostAction.act(target_user, p3, type)
+        PostActionCreator.new(source_user, p1, type).perform
+        PostActionCreator.new(source_user, p2, type).perform
+        PostActionCreator.new(target_user, p2, type).perform
+        PostActionCreator.new(target_user, p3, type).perform
       end
 
       merge_users!
@@ -333,16 +333,16 @@ describe UserMerger do
       p3 = Fabricate(:post)
       p4 = Fabricate(:post)
 
-      action1 = PostAction.act(source_user, p1, PostActionType.flag_types[:off_topic])
+      action1 = PostActionCreator.create(source_user, p1, :off_topic).post_action
       action1.update_attribute(:deleted_by_id, source_user.id)
 
-      action2 = PostAction.act(source_user, p2, PostActionType.flag_types[:off_topic])
+      action2 = PostActionCreator.create(source_user, p2, :off_topic).post_action
       action2.update_attribute(:deferred_by_id, source_user.id)
 
-      action3 = PostAction.act(source_user, p3, PostActionType.flag_types[:off_topic])
+      action3 = PostActionCreator.create(source_user, p3, :off_topic).post_action
       action3.update_attribute(:agreed_by_id, source_user.id)
 
-      action4 = PostAction.act(source_user, p4, PostActionType.flag_types[:off_topic])
+      action4 = PostActionCreator.create(source_user, p4, :off_topic).post_action
       action4.update_attribute(:disagreed_by_id, source_user.id)
 
       merge_users!
@@ -426,8 +426,8 @@ describe UserMerger do
 
       PostActionType.types.each do |type_name, type_id|
         posts[type_name] = post = Fabricate(:post, user: walter)
-        PostAction.act(source_user, post, type_id)
-        PostAction.act(target_user, post, type_id)
+        PostActionCreator.new(source_user, post, type_id).perform
+        PostActionCreator.new(target_user, post, type_id).perform
       end
 
       merge_users!

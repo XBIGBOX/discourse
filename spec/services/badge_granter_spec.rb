@@ -58,7 +58,7 @@ describe BadgeGranter do
     it 'can backfill the welcome badge' do
       post = Fabricate(:post)
       user2 = Fabricate(:user)
-      PostAction.act(user2, post, PostActionType.types[:like])
+      PostActionCreator.create(user2, post, :like)
 
       UserBadge.destroy_all
       BadgeGranter.backfill(Badge.find(Badge::Welcome))
@@ -258,12 +258,12 @@ describe BadgeGranter do
     it "grants system like badges" do
       post = create_post(user: user)
       # Welcome badge
-      action = PostAction.act(liker, post, PostActionType.types[:like])
+      action = PostActionCreator.create(liker, post, :like)
       BadgeGranter.process_queue!
       expect(UserBadge.find_by(user_id: user.id, badge_id: 5)).not_to eq(nil)
 
       post = create_post(topic: post.topic, user: user)
-      action = PostAction.act(liker, post, PostActionType.types[:like])
+      action = PostActionCreator.create(liker, post, :like)
 
       # Nice post badge
       post.update_attributes like_count: 10

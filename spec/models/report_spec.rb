@@ -484,8 +484,8 @@ describe Report do
         topic = Fabricate(:topic, user: jeff, created_at: 1.day.ago)
         post = Fabricate(:post, topic: topic, user: jeff, created_at: 1.day.ago)
 
-        PostAction.act(arpit, post, PostActionType.types[:like])
-        PostAction.act(sam, post, PostActionType.types[:like])
+        PostActionCreator.create(arpit, post, :like)
+        PostActionCreator.create(sam, post, :like)
       end
 
       it "returns a report with data" do
@@ -519,7 +519,7 @@ describe Report do
       before do
         freeze_time
 
-        PostAction.act(flagger, post, PostActionType.types[:spam], message: 'bad')
+        PostActionCreator.new(flagger, post, PostActionType.types[:spam], message: 'bad').perform
       end
 
       it "returns a report with data" do
@@ -625,7 +625,7 @@ describe Report do
       context "flags" do
         before do
           flagged_post = Fabricate(:post)
-          PostAction.act(jeff, flagged_post, PostActionType.types[:off_topic])
+          PostActionCreator.create(jeff, flagged_post, :off_topic)
           PostAction.agree_flags!(flagged_post, jeff)
         end
 
@@ -756,10 +756,10 @@ describe Report do
         post1 = Fabricate(:post, topic: Fabricate(:topic, category_id: 2))
         post2 = Fabricate(:post)
         post3 = Fabricate(:post)
-        PostAction.act(user, post0, PostActionType.types[:off_topic])
-        PostAction.act(user, post1, PostActionType.types[:off_topic])
-        PostAction.act(user, post2, PostActionType.types[:off_topic])
-        PostAction.act(user, post3, PostActionType.types[:off_topic]).tap do |pa|
+        PostActionCreator.create(user, post0, :off_topic)
+        PostActionCreator.create(user, post1, :off_topic)
+        PostActionCreator.create(user, post2, :off_topic)
+        PostActionCreator.create(user, post3, :off_topic).post_action.tap do |pa|
           pa.created_at = 45.days.ago
         end.save
       end
@@ -939,13 +939,13 @@ describe Report do
       before(:each) do
         topic = Fabricate(:topic, category_id: 2)
         post = Fabricate(:post, topic: topic)
-        PostAction.act(Fabricate(:user), post, PostActionType.types[:like])
+        PostActionCreator.create(Fabricate(:user), post, :like)
 
         topic = Fabricate(:topic, category_id: 4)
         post = Fabricate(:post, topic: topic)
-        PostAction.act(Fabricate(:user), post, PostActionType.types[:like])
-        PostAction.act(Fabricate(:user), post, PostActionType.types[:like])
-        PostAction.act(Fabricate(:user), post, PostActionType.types[:like]).tap do |pa|
+        PostActionCreator.create(Fabricate(:user), post, :like)
+        PostActionCreator.create(Fabricate(:user), post, :like)
+        PostActionCreator.create(Fabricate(:user), post, :like).post_action.tap do |result|
           pa.created_at = 45.days.ago
         end.save!
       end
@@ -973,17 +973,17 @@ describe Report do
       it "it works" do
         10.times do
           post_disagreed = Fabricate(:post)
-          PostAction.act(joffrey, post_disagreed, PostActionType.types[:spam])
+          PostActionCreator.create(joffrey, post_disagreed, :spam)
           PostAction.clear_flags!(post_disagreed, moderator)
         end
 
         3.times do
           post_disagreed = Fabricate(:post)
-          PostAction.act(robin, post_disagreed, PostActionType.types[:spam])
+          PostActionCreator.create(robin, post_disagreed, :spam)
           PostAction.clear_flags!(post_disagreed, moderator)
         end
         post_agreed = Fabricate(:post)
-        PostAction.act(robin, post_agreed, PostActionType.types[:off_topic])
+        PostActionCreator.create(robin, post_agreed, :off_topic)
         PostAction.agree_flags!(post_agreed, moderator)
 
         report = Report.find('user_flagging_ratio')

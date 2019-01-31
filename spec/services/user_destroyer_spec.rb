@@ -179,7 +179,7 @@ describe UserDestroyer do
 
             it "agrees with flags on user's posts" do
               spammer_post = Fabricate(:post, user: @user)
-              flag = PostAction.act(@admin, spammer_post, PostActionType.types[:inappropriate])
+              flag = PostActionCreator.create(@admin, spammer_post, :inappropriate)
               expect(flag.agreed_at).to eq(nil)
 
               destroy
@@ -335,7 +335,7 @@ describe UserDestroyer do
       before do
         @topic = Fabricate(:topic, user: Fabricate(:user))
         @post = Fabricate(:post, user: @topic.user, topic: @topic)
-        @like = PostAction.act(@user, @post, PostActionType.types[:like])
+        @like = PostActionCreator.create(@user, @post, :like)
       end
 
       it 'should destroy the like' do

@@ -147,13 +147,13 @@ describe User do
 
     it "creates a bookmark with the true parameter" do
       expect {
-        PostAction.act(@post.user, @post, PostActionType.types[:bookmark])
+        PostActionCreator.create(@post.user, @post, :bookmark)
       }.to change(PostAction, :count).by(1)
     end
 
     describe 'when removing a bookmark' do
       before do
-        PostAction.act(@post.user, @post, PostActionType.types[:bookmark])
+        PostActionCreator.create(@post.user, @post, :bookmark)
       end
 
       it 'reduces the bookmark count of the post' do
@@ -1367,15 +1367,15 @@ describe User do
 
     it "doesn't count disagreed flags" do
       post_agreed = Fabricate(:post)
-      PostAction.act(user, post_agreed, PostActionType.types[:off_topic])
+      PostActionCreator.create(user, post_agreed, :off_topic)
       PostAction.agree_flags!(post_agreed, moderator)
 
       post_deferred = Fabricate(:post)
-      PostAction.act(user, post_deferred, PostActionType.types[:inappropriate])
+      PostActionCreator.create(user, post_deferred, :inappropriate)
       PostAction.defer_flags!(post_deferred, moderator)
 
       post_disagreed = Fabricate(:post)
-      PostAction.act(user, post_disagreed, PostActionType.types[:spam])
+      PostActionCreator.create(user, post_disagreed, :spam)
       PostAction.clear_flags!(post_disagreed, moderator)
 
       expect(user.number_of_flags_given).to eq(2)
@@ -1943,7 +1943,7 @@ describe User do
       user = Fabricate(:user)
       post = Fabricate(:post)
 
-      PostAction.act(user, post, PostActionType.types[:like])
+      PostActionCreator.create(user, post, :like)
       PostAction.remove_act(user, post, PostActionType.types[:like])
 
       UserAction.create!(user_id: user.id, action_type: UserAction::LIKE)

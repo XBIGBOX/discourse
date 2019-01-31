@@ -166,13 +166,13 @@ describe UserAction do
     end
 
     it "creates a new stream entry" do
-      PostAction.act(liker, post, PostActionType.types[:like])
+      PostActionCreator.create(liker, post, :like)
       expect(likee_stream.count).to eq(@old_count + 1)
     end
 
     context "successful like" do
       before do
-        PostAction.act(liker, post, PostActionType.types[:like])
+        PostActionCreator.create(liker, post, :like)
         @liker_action = liker.user_actions.find_by(action_type: UserAction::LIKE)
         @likee_action = likee.user_actions.find_by(action_type: UserAction::WAS_LIKED)
       end
@@ -214,7 +214,7 @@ describe UserAction do
       end
 
       it "doesn't add the entry to the stream" do
-        PostAction.act(liker, post, PostActionType.types[:like])
+        PostActionCreator.create(liker, post, :like)
         expect(likee_stream.count).not_to eq(@old_count + 1)
       end
 
@@ -275,7 +275,7 @@ describe UserAction do
     before do
       @post = Fabricate(:post)
       @user = @post.user
-      PostAction.act(@user, @post, PostActionType.types[:bookmark])
+      PostActionCreator.create(@user, @post, :bookmark)
       @action = @user.user_actions.find_by(action_type: UserAction::BOOKMARK)
     end
 
@@ -319,7 +319,7 @@ describe UserAction do
     end
 
     it 'correctly secures stream' do
-      PostAction.act(user, private_message, PostActionType.types[:bookmark])
+      PostActionCreator.create(user, private_message, :bookmark)
 
       expect(count_bookmarks).to eq(1)
 

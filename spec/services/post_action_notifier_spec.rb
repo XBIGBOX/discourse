@@ -64,7 +64,7 @@ describe PostActionNotifier do
       other_user = Fabricate(:user)
       topic.allowed_users << user << other_user
       expect {
-        PostAction.act(other_user, mention_post, PostActionType.types[:like])
+        PostActionCreator.create(other_user, mention_post, :like)
       }.to change(user.notifications, :count)
     end
   end
